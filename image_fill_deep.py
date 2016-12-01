@@ -74,22 +74,54 @@ if __name__ == '__main__':
     conv_input = tf.stop_gradient(combined_input)
     loss_input = tf.stop_gradient(tf.cast(image_input, tf.float32))
 
-    kernel1 = tf.Variable(tf.random_uniform([5, 5, dim3+1, 128], -0.01, 0.01))
-    b1 = tf.Variable(tf.random_uniform([128], -0.01, 0.01))
+    kernel1 = tf.Variable(tf.random_uniform([3, 3, dim3+1, 64], -0.01, 0.01))
+    b1 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
 
-    kernel2 = tf.Variable(tf.random_uniform([5, 5, 128, 128], -0.01, 0.01))
-    b2 = tf.Variable(tf.random_uniform([128], -0.01, 0.01))
+    kernel2 = tf.Variable(tf.random_uniform([3, 3, 64, 64], -0.01, 0.01))
+    b2 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
 
-    kernel3 = tf.Variable(tf.random_uniform([5, 5, 128, 128], -0.01, 0.01))
-    b3 = tf.Variable(tf.random_uniform([128], -0.01, 0.01))
+    kernel3 = tf.Variable(tf.random_uniform([3, 3, 64, 64], -0.01, 0.01))
+    b3 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
 
-    kernel_out = tf.Variable(tf.random_uniform([5, 5, 128, dim3], -0.01, 0.01))
-    b_out = tf.Variable(tf.random_uniform([dim3], -0.01, 0.01))
+    kernel4 = tf.Variable(tf.random_uniform([3, 3, 64, 64], -0.01, 0.01))
+    b4 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
+
+    kernel5 = tf.Variable(tf.random_uniform([3, 3, 64, 64], -0.01, 0.01))
+    b5 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
+
+    kernel6 = tf.Variable(tf.random_uniform([3, 3, 64, 64], -0.01, 0.01))
+    b6 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
+
+    kernel7 = tf.Variable(tf.random_uniform([3, 3, 64, 64], -0.01, 0.01))
+    b7 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
+
+    kernel8 = tf.Variable(tf.random_uniform([3, 3, 64, 64], -0.01, 0.01))
+    b8 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
+
+    kernel9 = tf.Variable(tf.random_uniform([3, 3, 64, 64], -0.01, 0.01))
+    b9 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
+
+    kernel10 = tf.Variable(tf.random_uniform([3, 3, 64, 64], -0.01, 0.01))
+    b10 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
+
+    kernel11 = tf.Variable(tf.random_uniform([3, 3, 64, 64], -0.01, 0.01))
+    b11 = tf.Variable(tf.random_uniform([64], -0.01, 0.01))
+
+    kernelOut = tf.Variable(tf.random_uniform([3, 3, 64, dim3], -0.01, 0.01))
+    bOut = tf.Variable(tf.random_uniform([dim3], -0.01, 0.01))
 
     conv1 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv_input, kernel1, [1, 1, 1, 1], padding='SAME'), b1))
     conv2 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv1, kernel2, [1, 1, 1, 1], padding='SAME'), b2))
     conv3 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv2, kernel3, [1, 1, 1, 1], padding='SAME'), b3))
-    conv_output = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv3, kernel_out, [1, 1, 1, 1], padding='SAME'), b_out))
+    conv4 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv3, kernel4, [1, 1, 1, 1], padding='SAME'), b4))
+    conv5 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv4, kernel5, [1, 1, 1, 1], padding='SAME'), b5))
+    conv6 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv5, kernel6, [1, 1, 1, 1], padding='SAME'), b6))
+    conv7 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv6, kernel7, [1, 1, 1, 1], padding='SAME'), b7))
+    conv8 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv7, kernel8, [1, 1, 1, 1], padding='SAME'), b8))
+    conv9 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv8, kernel9, [1, 1, 1, 1], padding='SAME'), b9))
+    conv10 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv9, kernel10, [1, 1, 1, 1], padding='SAME'), b10))
+    conv11 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv10, kernel11, [1, 1, 1, 1], padding='SAME'), b11))
+    conv_output = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv11, kernelOut, [1, 1, 1, 1], padding='SAME'), bOut))
 
     loss = tf.reduce_mean(tf.square(tf.sub(loss_input, conv_output))) 
     training_summary = tf.scalar_summary("Training Loss", loss)

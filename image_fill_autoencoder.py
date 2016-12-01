@@ -77,19 +77,43 @@ if __name__ == '__main__':
     kernel1 = tf.Variable(tf.random_uniform([5, 5, dim3+1, 128], -0.01, 0.01))
     b1 = tf.Variable(tf.random_uniform([128], -0.01, 0.01))
 
-    kernel2 = tf.Variable(tf.random_uniform([5, 5, 128, 128], -0.01, 0.01))
-    b2 = tf.Variable(tf.random_uniform([128], -0.01, 0.01))
+    kernel2 = tf.Variable(tf.random_uniform([5, 5, 128, 256], -0.01, 0.01))
+    b2 = tf.Variable(tf.random_uniform([256], -0.01, 0.01))
 
-    kernel3 = tf.Variable(tf.random_uniform([5, 5, 128, 128], -0.01, 0.01))
-    b3 = tf.Variable(tf.random_uniform([128], -0.01, 0.01))
+    kernel3 = tf.Variable(tf.random_uniform([3, 3, 256, 512], -0.01, 0.01))
+    b3 = tf.Variable(tf.random_uniform([512], -0.01, 0.01))
 
-    kernel_out = tf.Variable(tf.random_uniform([5, 5, 128, dim3], -0.01, 0.01))
+    kernel4 = tf.Variable(tf.random_uniform([3, 3, 512, 1024], -0.01, 0.01))
+    b4 = tf.Variable(tf.random_uniform([1024], -0.01, 0.01))
+
+    kernel5 = tf.Variable(tf.random_uniform([3, 3, 1024, 4092], -0.01, 0.01))
+    b5 = tf.Variable(tf.random_uniform([4092], -0.01, 0.01))
+
+    kernelt1 = tf.Variable(tf.random_uniform([2, 2, 1024, 4092], -0.01, 0.01))
+    bt1 = tf.Variable(tf.random_uniform([1024], -0.01, 0.01))
+
+    kernelt2 = tf.Variable(tf.random_uniform([2, 2, 512, 1024], -0.01, 0.01))
+    bt2 = tf.Variable(tf.random_uniform([512], -0.01, 0.01))
+
+    kernelt3 = tf.Variable(tf.random_uniform([2, 2, 256, 512], -0.01, 0.01))
+    bt3 = tf.Variable(tf.random_uniform([256], -0.01, 0.01))
+
+    kernelt4 = tf.Variable(tf.random_uniform([2, 2, 128, 256], -0.01, 0.01))
+    bt4 = tf.Variable(tf.random_uniform([128], -0.01, 0.01))
+
+    kernel_out = tf.Variable(tf.random_uniform([2, 2, dim3, 128], -0.01, 0.01))
     b_out = tf.Variable(tf.random_uniform([dim3], -0.01, 0.01))
 
-    conv1 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv_input, kernel1, [1, 1, 1, 1], padding='SAME'), b1))
-    conv2 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv1, kernel2, [1, 1, 1, 1], padding='SAME'), b2))
-    conv3 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv2, kernel3, [1, 1, 1, 1], padding='SAME'), b3))
-    conv_output = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv3, kernel_out, [1, 1, 1, 1], padding='SAME'), b_out))
+    conv1 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv_input, kernel1, [1, 2, 2, 1], padding='SAME'), b1))
+    conv2 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv1, kernel2, [1, 2, 2, 1], padding='SAME'), b2))
+    conv3 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv2, kernel3, [1, 2, 2, 1], padding='SAME'), b3))
+    conv4 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv3, kernel4, [1, 2, 2, 1], padding='SAME'), b4))
+    conv5 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d(conv4, kernel5, [1, 2, 2, 1], padding='SAME'), b5))
+    convt1 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d_transpose(conv5, kernelt1, [batch_size, 2, 2, 1024], [1, 2, 2, 1], padding='SAME'), bt1))
+    convt2 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d_transpose(convt1, kernelt2, [batch_size, 4, 4, 512], [1, 2, 2, 1], padding='SAME'), bt2))
+    convt3 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d_transpose(convt2, kernelt3, [batch_size, 8, 8, 256], [1, 2, 2, 1], padding='SAME'), bt3))
+    convt4 = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d_transpose(convt3, kernelt4, [batch_size, 16, 16, 128], [1, 2, 2, 1], padding='SAME'), bt4))
+    conv_output = tf.nn.relu(tf.nn.bias_add(tf.nn.conv2d_transpose(convt4, kernel_out, [batch_size, 32, 32, dim3], [1, 2, 2, 1], padding='SAME'), b_out))
 
     loss = tf.reduce_mean(tf.square(tf.sub(loss_input, conv_output))) 
     training_summary = tf.scalar_summary("Training Loss", loss)
@@ -108,13 +132,13 @@ if __name__ == '__main__':
         tick = 0
         image_batch = np.zeros((batch_size, 32, 32, 3))
 
-        for temp in xrange(0, 20):         
+        for temp in xrange(0, 40):         
             cifar_batch = (temp % 5) + 1
             images = unpickle('cifar-10-batches-py/data_batch_{}'.format(cifar_batch))
 
             for i in xrange(cifar10_batch_size): # size of a cifar 10 batch
                 tick += 1
-                if temp > 9:      
+                if temp > 19:      
                     image = images['data'][i].reshape((3, 32, 32)).swapaxes(0, 2).swapaxes(0, 1)  
                 else:
                     image = images['data'][i].reshape((3, 32, 32)).swapaxes(0, 2)      
